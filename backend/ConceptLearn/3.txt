@@ -1,0 +1,7 @@
+
+Use of express.Router() in Node.js Express
+In an Express.js application, express.Router() is used to create modular, mountable route handlers. It helps in organizing routes efficiently by breaking them into smaller, manageable modules instead of defining all routes in a single file.
+
+
+
+

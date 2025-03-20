@@ -1,0 +1,5 @@
+
+Database should be connected before starting the server
+If the server starts first and the database connection fails, API requests may not work properly.
+Unnecessary DB calls inside app.listen()
+The database connection should be established first, and only if successful, the server should start.

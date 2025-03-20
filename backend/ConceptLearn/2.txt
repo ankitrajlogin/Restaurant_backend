@@ -1,0 +1,92 @@
+Folder and File Explanations
+
+1. config/ → Configuration Files
+Stores configuration settings for the project, such as database connection, API keys, environment variables, etc.
+
+📜 db.js       → Database connection settings
+📜 default.js  → Default application settings
+📜 jwt.js      → JWT authentication configuration
+
+
+
+
+2. controllers/ → Handles Business Logic
+Controllers contain logic for handling requests and responses.
+Each controller corresponds to a feature or module.
+Example files:
+
+📜 userController.js  → Handles user-related requests
+📜 productController.js  → Handles product-related requests
+
+
+
+3. models/ → Database Models (Schemas)
+Defines the structure of data stored in the database.
+Example files:
+
+📜 userModel.js   → Defines user schema
+📜 productModel.js  → Defines product schema
+
+
+
+
+3. models/ → Database Models (Schemas)
+Defines the structure of data stored in the database.
+
+
+
+
+4. routes/ → API Route Definitions
+Defines all API endpoints and links them to controllers.
+Example files:
+
+📜 userRoutes.js   → Defines routes for user-related operations
+📜 productRoutes.js  → Defines routes for products
+
+
+
+5. middlewares/ → Middleware Functions
+Middleware functions run between request and response.
+Example files:
+
+📜 authMiddleware.js   → Handles authentication checks
+📜 errorMiddleware.js  → Handles global error handling
+
+
+
+
+
+6. data/ → Mock Data / Seed Data
+Stores dummy data or seed files to populate the database for testing
+
+
+
+7. utils/ → Utility Functions
+Contains helper functions used throughout the project.
+
+Example files:
+
+📜 generateToken.js  → Generates JWT tokens
+📜 emailHelper.js    → Helper function for sending emails
+
+
+
+10. services/ → Third-Party API Integration
+Contains logic for interacting with external APIs.
+Example files:
+vbnet
+Copy
+Edit
+📜 paymentService.js   → Handles payment API (Stripe, PayPal)
+📜 smsService.js       → Handles SMS API integration
+
+
+
+
+.env -> 	Stores environment variables (e.g., API keys, DB credentials)
+
+app.js / index.js -> 	Entry point of the application, initializes Express
+
+package.json	 -> Lists dependencies and scripts
+
+README.md  -> 	Documentation for the project
