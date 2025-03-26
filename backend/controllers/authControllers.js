@@ -5,16 +5,17 @@ const JWT = require("jsonwebtoken") ;
 
 
 const registerController = async (req , res) => {
+    console.log("message 2")
     try{
         // destructuring .
-        const {userName , email , password , phone , address} = req.body 
+        const {userName , email , password , phone , address , security } = req.body 
 
         // validation 
 
-        if(!userName || !email || !password || !address || !phone){
+        if(!userName || !email || !password || !address || !security.question || !security.answer){
             return res.status(500).send({
                 success : false , 
-                message : 'Please Provide All Fields' 
+                message : 'Please provide all required fields, including security question and answer.' 
             })
         }
 
@@ -32,14 +33,24 @@ const registerController = async (req , res) => {
         // hashing password 
         const hashedPassword = await hashPassword(password) ; 
 
+        console.log("message 21")
+
+        // hashing security anser ; 
+
+        const hashedAnswer = await hashPassword(security.answer) ; 
+
         // create new user 
 
         const user = await userModel.create({
-            userName, 
-            email, 
-            password : hashedPassword , 
-            address, 
-            phone 
+            userName,
+            email,
+            password: hashedPassword,
+            security: {
+                question: security.question,
+                answer: hashedAnswer
+            },
+            phone: phone || null,  
+            address: address || [], 
         });
 
         res.status(201).send({
@@ -60,6 +71,7 @@ const registerController = async (req , res) => {
 
 
 const loginController = async (req , res) => {
+    console.log("message 3")
     try{
         const {email , password} = req.body 
 
@@ -91,7 +103,7 @@ const loginController = async (req , res) => {
             }) ; 
         }
 
-        
+        console.log("message 32")
        
 
         const token = JWT.sign({id:user._id} , process.env.JWT_SECRET , {
@@ -100,6 +112,7 @@ const loginController = async (req , res) => {
 
         user.password = undefined ; 
 
+        console.log("message 33")
         res.status(200).send({
             success : true , 
             message : "Login Sucessfully" , 

@@ -31,6 +31,16 @@ const userSchema = new mongoose.Schema({
         default : 'clinet' ,
         enum:['clinet', 'admin' , 'vendor' , 'driver']
     },
+    security: {
+        question: { 
+            type: String, 
+            required: [true , 'Question is required'],
+        },
+        answer: { 
+            type: String, 
+            required: [true , 'Answer is Required' ]
+         } // Ideally, store this hashed
+    },
     profile:{
         type : String , 
         default: "Image link"
