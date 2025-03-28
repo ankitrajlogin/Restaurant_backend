@@ -1,5 +1,5 @@
 
-const testUserController = (req , res) => {
+const testUserController = async(req , res) => {
     try {
         res.status(200).send({
             success : true , 

@@ -26,6 +26,7 @@ const getUserController = async (req , res) => {
         // hide password 
         // user.password = undefined ; 
 
+        // need to do toObject so that security directly access. 
         const {password , _id , security , ...user_withouID} = user.toObject() ; 
 
         res.status(200).send({
@@ -69,7 +70,6 @@ const updateUserController = async(req , res) => {
         if(securityData  && securityData ?.question && securityData ?.answer){
             // We ensure that even if security is missing in the database, an empty object {} is assigned to user.security. Now, we can safely update both question and answer:
             user.security = user.security || {};
-
             user.security.question = securityData.question ;
             
             const hashedAnswer = await hashPassword(securityData .answer) ; 
@@ -153,11 +153,12 @@ const updatePasswordController = async(req , res) => {
         // user.id = undefined ; 
 
 
-        const {_id , password , ...userWithoutId} = user.toObject() ; 
+        const {_id , password , security ,  ...userWithoutId} = user.toObject() ; 
 
         res.status(200).send({
             success : true , 
-            message : "Password Updated !" , userWithoutId
+            message : "Password Updated !" , 
+            userWithoutId
  
         })
 
@@ -179,15 +180,18 @@ const updatePasswordController = async(req , res) => {
 // and hence. during the resetPassword , user have to select the correct question and then answer it accordingly to reset their password. 
 
 const resetPasswordController = async(req , res) =>{
+    console.log("message 5")
     try{
-        const {email , securityQuestion , securityAnswer , newPassword } = req.body ; 
-        
-        if(!email ||  !securityQuestion || !securityAnswer || !newPassword){
-            return res.status(404).send({
-                success : false , 
-                message : "Provide all field properly" 
-            }) ; 
+        const { email, security : sec , newPassword } = req.body;
+
+        if (!email || !sec || !sec.question || !sec.answer || !newPassword) {
+            return res.status(400).send({
+                success: false,
+                message: "Provide all fields properly.",
+            });
         }
+
+        console.log("message 51")
 
         const user = await userModel.findOne({email}) ; 
 
@@ -198,14 +202,17 @@ const resetPasswordController = async(req , res) =>{
             });
         }
 
-        if(user.security.question !== securityQuestion){
+        console.log("message 53")
+
+        if(user.security.question !== sec.question){
             return res.status(400).send({
                 success: false,
                 message: "Security question does not match",
             });
         }
 
-        const isAnswerCorrect = await bcrypt.compare(securityAnswer, user.security.answer);
+        const isAnswerCorrect = await bcrypt.compare(sec.answer, user.security.answer);
+
         if (!isAnswerCorrect) {
             return res.status(400).send({
                 success: false,
@@ -213,23 +220,34 @@ const resetPasswordController = async(req , res) =>{
             });
         }
 
-        const hashedPassword = await hashPassword(newPassword) ; 
+        const isMatch = await bcrypt.compare(newPassword , user.password ) ; 
 
-        user.password = hashPassword ; 
+        if(isMatch){
+            return res.status(400).send({
+                success: false,
+                message: "Old and New Password are same, Try different"
+            })
+        }
 
-        await user.save() ;
-        
-        const {password , _id , security , ...user_withouID} = user.toObject() ; 
+
+        const hashedPassword = await hashPassword(newPassword);
+
+        user.password = hashedPassword;
+
+        await user.save();
+
+        const { password, _id, security , ...userWithoutSensitiveData } = user.toObject();
+ 
 
         res.status(200).send({
             success: true,
             message: "Password has been reset successfully!",
-            user_withouID
+            userWithoutSensitiveData
         })
 
 
     }
-    catch(err){
+    catch(error){
         console.log(error);
         res.status(500).send({
             success: false,
@@ -242,9 +260,46 @@ const resetPasswordController = async(req , res) =>{
 
 
 
+const deleteUserController = async (req, res) => {
+    console.log("message 6")
+    try {
+        const { email } = req.params;
+
+        // Check if the email is provided
+        if (!email) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Email is required!" 
+            });
+        }
+
+        // Find and delete the user
+        const deletedUser = await userModel.findOneAndDelete({ email });
+
+        if (!deletedUser) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "User not found!" 
+            });
+        }
+
+        return res.status(200).json({ 
+            success: true, 
+            message: "User deleted successfully!" });
+    } 
+    catch (error) {
+        return res.status(500).json({ 
+            success: false, 
+            message: "Error deleting user", error 
+        });
+    }
+};
+
+
 module.exports = {
     getUserController , 
     updateUserController,
     updatePasswordController,
-    resetPasswordController
+    resetPasswordController , 
+    deleteUserController
     } ; 

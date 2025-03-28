@@ -5,6 +5,13 @@ const morgan = require("morgan") ;
 const dotenv = require('dotenv') ;
 const connectDb = require("./config/db")
 
+const testroutes = require("./routes/testRoutes")
+const authRoutes = require("./routes/authRoutes")
+const userRoutes = require('./routes/userRoutes')
+const restaurantRoutes = require("./routes/restaurantRoutes")
+
+
+
 // dot env variable 
 dotenv.config() ;  // for root , not need to specify path. 
 
@@ -29,10 +36,10 @@ app.use(morgan("dev")) ;
 
 // route 
 
-app.use('/api/v1/test' , require("./routes/testRoutes")) ; 
-app.use('/api/v1/auth' , require("./routes/authRoutes")) ; 
-app.use('/api/v1/user' , require('./routes/userRoutes')) ;
-
+app.use('/api/v1/test' , testroutes) ; 
+app.use('/api/v1/auth' , authRoutes) ; 
+app.use('/api/v1/user' , userRoutes ) ;
+app.use('/api/v1/restaurant' , restaurantRoutes)
 
 // route 
 
@@ -55,7 +62,7 @@ const PORT = process.env.PORT || 5000 ;
 
 // Connect to the database, then start the server
 connectDb().then(() => {
-    console.log("message 1")
+    console.log("message 0")
     app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`.white.bgMagenta);
     });

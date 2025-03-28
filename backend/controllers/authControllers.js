@@ -94,7 +94,7 @@ const loginController = async (req , res) => {
         }
 
         // check user password | compare password 
-        const isMatch = await bcrypt.compare(password , user.password )
+        const isMatch = await bcrypt.compare(password , user.password ) ; 
 
         if(!isMatch){
             return res.status(500).send({

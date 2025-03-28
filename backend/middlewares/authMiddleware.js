@@ -10,8 +10,11 @@ const authMiddleware = async (req , res , next) =>{
 
     console.log("testing 1")
     try {
+        console.log(req) ; 
         const authHeader = req.headers["authorization"] ; 
         console.log("authheader is : " , authHeader) ; 
+
+        console.log("testing 12")
         
         if(!authHeader || !authHeader.startsWith("Bearer ")){
             return res.status(401).json({
@@ -40,6 +43,8 @@ const authMiddleware = async (req , res , next) =>{
         }
 
         req.body.id = decoded.id ; // attack decoded user ID to request ; 
+
+        console.log("testing 13")
         next() ; 
 
 
