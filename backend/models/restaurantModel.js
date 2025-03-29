@@ -1,6 +1,11 @@
 const mongoose = require("mongoose") ; 
 
 const restaurantSchema = new mongoose.Schema({
+    restaurantId: {
+        type: String,
+        required : true , 
+        unique: true,
+        },
     title:{
         type : String , 
         required : [true , "Resurant Title is required"]
@@ -8,9 +13,22 @@ const restaurantSchema = new mongoose.Schema({
     imageUrl : {
         type : String , 
     },
-    foods : {
-        type : Array 
-    }, 
+    foods : [
+        {
+            name : {
+                type : String , 
+                required : [true , "Food name is required" ]
+            }, 
+            picUrl : {
+                type : String 
+            },
+            price : {
+                type : Number , 
+                required : [true , "Food price is required"] , 
+                min : [ 1 , "Price must be a positive number"]
+            }
+        }
+    ],
     time : {
         type : String 
     },
