@@ -1,7 +1,7 @@
 
 const express = require("express") ; 
 
-const authMiddleware = require("../middlewares/authMiddleware")
+const {authMiddleware , adminMiddleware} = require("../middlewares/authMiddleware")
 
 const {createRestaurantController , getAllRestaurantController , getResaurantByIdController, deleteRestaurantController} = require("../controllers/restaurantControllers")
 
@@ -9,7 +9,7 @@ const {createRestaurantController , getAllRestaurantController , getResaurantByI
 const router = express.Router() ; 
 
 
-router.post('/create' , authMiddleware , createRestaurantController) ;
+router.post('/create' , authMiddleware , authMiddleware , createRestaurantController) ;
 
 router.get('/getAll' , getAllRestaurantController) ;
 
