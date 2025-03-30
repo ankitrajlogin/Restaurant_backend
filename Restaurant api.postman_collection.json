@@ -1,0 +1,448 @@
+{
+	"info": {
+		"_postman_id": "a47eb887-75d1-46ff-9945-0397d585a27f",
+		"name": "Restaurant api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21818866"
+	},
+	"item": [
+		{
+			"name": "auth api",
+			"item": [
+				{
+					"name": "register api",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var jsonDatar = pm.request.json();\r",
+									"\r",
+									"pm.globals.set(\"userPassword\", jsonDatar.password);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"if (jsonData.success && jsonData.user) {\r",
+									"    // Store user details as global variables\r",
+									"    pm.globals.set(\"userName\", jsonData.user.userName);\r",
+									"    pm.globals.set(\"userEmail\", jsonData.user.email);\r",
+									"    pm.globals.set(\"securityQuestion\", jsonData.user.security.question);\r",
+									"\r",
+									"    console.log(\"User details saved as global variables.\");\r",
+									"} else {\r",
+									"    console.log(\"Error: Registration failed or user data missing!\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\" : \"ankit\" , \r\n    \"email\" : \"ankit1@gmail.com\" , \r\n    \"password\" : \"ankit\" , \r\n    \"address\" : \"Patna , Bihar\",\r\n    \"security\": {\r\n        \"question\": \"What is your favorite color?\",\r\n        \"answer\": \"Blue\"\r\n        }, \r\n    \"phone\" : \"9006345822\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login api",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"if (jsonData.success && jsonData.token) {\r",
+									"    pm.globals.set(\"authToken\", jsonData.token);\r",
+									"} else {\r",
+									"    console.log(\"Login failed or token not found!\");\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : {{userEmail}} , \r\n    \"password\" : {{userPassword}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"var jsonData = pm.response.json() ; \r",
+							"pm.environment.set(\"authtoken\" , jsonData.token) ; "
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "New Folder",
+			"item": [
+				{
+					"name": "getUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var token = pm.globals.get(\"authToken\");\r",
+									"\r",
+									"if (token) {\r",
+									"    pm.request.headers.add({\r",
+									"        key: \"Authorization\",\r",
+									"        value: \"Bearer \" + token\r",
+									"    });\r",
+									"    console.log(\"Authorization token added successfully.\");\r",
+									"} else {\r",
+									"    console.log(\"Error: authToken is missing! Make sure to log in first.\");\r",
+									"    pm.request.headers.add({\r",
+									"        key: \"Authorization\",\r",
+									"        value: \"Bearer MISSING_TOKEN\"\r",
+									"    });\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZTMwOTA0MzU3ODJiZWEzZWY3NGY1MCIsImlhdCI6MTc0MjkzNTE5MywiZXhwIjoxNzQzNTM5OTkzfQ.nhw4_NH-gQqTpNOBXarKl5D-2pfj1fOyJjw7pKdDliU",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/user/getUser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"getUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userName\" : \"changes username\" ,\r\n    \"address\" : \"changes address , address , patna\" ,\r\n    \"phone\" : \"123456789\" ,\r\n    \"security\": {\r\n        \"question\": \"{{securityQuestion}}\" ,\r\n        \"answer\": \"changes answer\"\r\n        }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/user/updateUser",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"updateUser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdatePassword",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "resetPassword api",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/user/resetPassword?",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"resetPassword"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteUser api",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "New Folder",
+			"item": [
+				{
+					"name": "New Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"// Check if success and restaurant data exists\r",
+									"\r",
+									"console.log(jsonData ) ; \r",
+									"if (jsonData && jsonData.restaurant && jsonData.restaurant.restaurantId) {\r",
+									"    pm.globals.set(\"restaurantId\", jsonData.restaurant.restaurantId);\r",
+									"    console.log(\"Restaurant ID stored:\", jsonData.restaurant.restaurantId);\r",
+									"} else {\r",
+									"    console.log(\"Can't fetch restaurantId, response:\", jsonData);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"restaurantId\": \"34534534543\",\r\n  \"title\": \"Delicious Corner\",\r\n  \"imageUrl\": \"https://example.com/restaurant.jpg\",\r\n  \"foods\": [\r\n    {\r\n      \"name\": \"Cheese Burger\",\r\n      \"picUrl\": \"https://example.com/burger.jpg\",\r\n      \"price\": 5.99\r\n    },\r\n    {\r\n      \"name\": \"Margherita Pizza\",\r\n      \"picUrl\": \"https://example.com/pizza.jpg\",\r\n      \"price\": 8.99\r\n    }\r\n  ],\r\n  \"time\": \"25-40 min\",\r\n  \"pickup\": true,\r\n  \"delivery\": true,\r\n  \"isOpen\": true,\r\n  \"logoUrl\": \"https://example.com/logo.jpg\",\r\n  \"rating\": 4.7,\r\n  \"ratingCount\": \"150\",\r\n  \"code\": \"DC789\",\r\n  \"coords\": {\r\n    \"id\": \"2\",\r\n    \"latitute\": 40.7128,\r\n    \"longitude\": -74.0060,\r\n    \"latitudeDelta\": 0.02,\r\n    \"longitudeDelta\": 0.02,\r\n    \"address\": \"456 Food Street, New York, NY\",\r\n    \"title\": \"Delicious Corner Location\"\r\n  }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/restaurant/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"restaurant",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \"restaurantId\" : \"1223423412\" , \r\n  \"title\": \"Delicious Corner\",\r\n  \"imageUrl\": \"https://example.com/restaurant.jpg\",\r\n  \"foods\": [\r\n    {\r\n      \"name\": \"Cheese Burger\",\r\n      \"picUrl\": \"https://example.com/burger.jpg\",\r\n      \"price\": 5.99\r\n    },\r\n    {\r\n      \"name\": \"Margherita Pizza\",\r\n      \"picUrl\": \"https://example.com/pizza.jpg\",\r\n      \"price\": 8.99\r\n    }\r\n  ],\r\n  \"time\": \"25-40 min\",\r\n  \"pickup\": true,\r\n  \"delivery\": true,\r\n  \"isOpen\": true,\r\n  \"logoUrl\": \"https://example.com/logo.jpg\",\r\n  \"rating\": 4.7,\r\n  \"ratingCount\": \"150\",\r\n  \"code\": \"DC789\",\r\n  \"coords\": {\r\n    \"id\": \"2\",\r\n    \"latitute\": 40.7128,\r\n    \"longitude\": -74.0060,\r\n    \"latitudeDelta\": 0.02,\r\n    \"longitudeDelta\": 0.02,\r\n    \"address\": \"456 Food Street, New York, NY\",\r\n    \"title\": \"Delicious Corner Location\"\r\n  }\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/restaurant/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"restaurant",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "delete restaurant ID",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
